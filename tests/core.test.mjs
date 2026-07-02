@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { test } from "node:test";
 
-import { globToRegExp, matchesAny } from "../scripts/lib/core.mjs";
+import { globToRegExp, matchesAny, scanRedFlags } from "../scripts/lib/core.mjs";
 
 test("glob: ** crosses segments", () => {
   assert.ok(globToRegExp("src/**").test("src/a/b/c.ts"));
@@ -43,4 +46,22 @@ test("glob: * inside {} alternatives works and never throws", () => {
 test("matchesAny unions globs", () => {
   assert.ok(matchesAny("package.json", ["src/**", "package.json"]));
   assert.ok(!matchesAny("README.md", ["src/**", "package.json"]));
+});
+
+test("scanRedFlags catches multi-line empty catch and reports its line", () => {
+  const root = mkdtempSync(join(tmpdir(), "ai-loop-flags-"));
+  try {
+    mkdirSync(join(root, "src"));
+    writeFileSync(
+      join(root, "src/a.ts"),
+      ["const x = 1;", "try {", "  f();", "} catch (e) {", "}", "console.log(x);"].join("\n"),
+    );
+    const findings = scanRedFlags(["src/a.ts"], {}, root);
+    const ids = findings.map((finding) => finding.id).sort();
+    assert.deepEqual(ids, ["console-log", "empty-catch"]);
+    assert.equal(findings.find((finding) => finding.id === "empty-catch").line, 4);
+    assert.equal(findings.find((finding) => finding.id === "console-log").line, 6);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
