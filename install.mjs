@@ -5,7 +5,7 @@
 //   kit-owned, replaced wholesale on --update:  <target>/skills/, <target>/scripts/ai-loop/
 //   project-owned, scaffolded once, never touched again: AGENTS.md, CLAUDE.md,
 //   ai-loop.config.json, docs/wiki/
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -89,11 +89,16 @@ function listFiles(dir, prefix = "") {
 function scaffold(sourceRelative, targetRelative) {
   const destination = join(target, targetRelative);
   if (existsSync(destination)) {
-    if (!isUpdate) console.log(`skip: ${targetRelative} already exists`);
+    // Directories scaffolded earlier in this run (e.g. docs/wiki/domains) are expected hits.
+    if (!isUpdate && !statSyncIsDir(destination)) console.log(`skip: ${targetRelative} already exists`);
     return;
   }
   mkdirSync(dirname(destination), { recursive: true });
   const content = readFileSync(join(kitRoot, sourceRelative), "utf8").replaceAll("{{DATE}}", today);
   writeFileSync(destination, content);
   console.log(`scaffold: ${targetRelative}`);
+}
+
+function statSyncIsDir(path) {
+  return statSync(path).isDirectory();
 }
