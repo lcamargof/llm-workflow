@@ -15,7 +15,9 @@ if (!stage.trim()) {
 }
 
 if (!isTrackedTreeClean() && !args.includes("--allow-dirty")) {
-  console.error("tracked tree is dirty — commit, stash, or inspect first (untracked files are fine)");
+  console.error(
+    "tracked tree is dirty — commit, stash, or inspect first (untracked files are fine)",
+  );
   process.exit(1);
 }
 
@@ -25,8 +27,9 @@ const progress = readFileSync(progressPath, "utf8");
 const base = headSha();
 const today = new Date().toISOString().slice(0, 10);
 
-const row = `| ${stage} | active | — | — | define exit criteria |`;
-const headerPattern = /\|---\|---\|---\|---\|---\|\n/;
+const row = `| ${stage} | active (base ${base}) | — | — | define exit criteria |`;
+// Tolerates formatter styles: |---| and | --- |
+const headerPattern = /\|(\s*:?-+:?\s*\|){5}\n/;
 if (!headerPattern.test(progress)) {
   console.error(`could not find the ledger table in ${progressPath}`);
   process.exit(1);

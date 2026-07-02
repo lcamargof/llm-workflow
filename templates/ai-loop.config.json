@@ -24,11 +24,15 @@
     }
   ],
   "lenses": {
-    "security": ["src/server/**", "**/auth/**", "**/*storage*", "**/*secret*"],
+    "security": ["src/server/**", "**/auth/**", "**/storage/**", "**/*secret*", "**/*token*"],
     "product": ["src/**/*.tsx", "src/**/*.css"],
     "complexity": ["package.json", "*.config.*", "scripts/**", "skills/**"]
   },
   "redFlags": {
     "consoleAllow": []
+  },
+  "wiki": {
+    "ledgerDriftCommits": 15,
+    "domainDriftCommits": 5
   }
 }

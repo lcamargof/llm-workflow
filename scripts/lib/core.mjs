@@ -40,10 +40,11 @@ export function globToRegExp(glob) {
     if (glob[i] === "{") {
       const end = glob.indexOf("}", i);
       if (end === -1) throw new Error(`unclosed { in glob: ${glob}`);
+      // Alternatives may contain * (within-segment); nested braces are unsupported.
       const body = glob
         .slice(i + 1, end)
         .split(",")
-        .map(escapeLiteral)
+        .map((alt) => alt.split("*").map(escapeLiteral).join("[^/]*"))
         .join("|");
       source += `(?:${body})`;
       i = end + 1;
@@ -76,11 +77,13 @@ export const CONFIG_FILE = "ai-loop.config.json";
 
 export function loadConfig(root = repoRoot()) {
   const path = join(root, CONFIG_FILE);
-  if (!existsSync(path)) throw new Error(`${CONFIG_FILE} not found at ${root} — run the ai-loop installer first`);
+  if (!existsSync(path))
+    throw new Error(`${CONFIG_FILE} not found at ${root} — run the ai-loop installer first`);
   const config = JSON.parse(readFileSync(path, "utf8"));
   if (!Array.isArray(config.gate) || config.gate.length === 0)
     throw new Error("config.gate must be a non-empty array of commands");
-  if (!Array.isArray(config.verify)) throw new Error("config.verify must be an array of {name, globs, commands} rules");
+  if (!Array.isArray(config.verify))
+    throw new Error("config.verify must be an array of {name, globs, commands} rules");
   for (const rule of config.verify) {
     if (!rule.name || !Array.isArray(rule.globs) || !Array.isArray(rule.commands)) {
       throw new Error(`invalid verify rule: ${JSON.stringify(rule)}`);
@@ -93,12 +96,25 @@ export function loadConfig(root = repoRoot()) {
 // No shell interpretation — wrap pipes or chaining in a script instead.
 export function runCommand(command, cwd) {
   const [bin, ...args] = command.split(/\s+/);
+  if (bin.includes("="))
+    throw new Error(
+      `env prefixes are not supported ("${bin}") — wrap the command in a package script`,
+    );
   execFileSync(bin, args, { stdio: "inherit", cwd });
 }
 
 const RED_FLAG_PATTERNS = [
-  { id: "console-log", regex: /console\.(log|debug)\(/, files: ["**/*.{ts,tsx,js,jsx}"], allowKey: "consoleAllow" },
-  { id: "empty-catch", regex: /catch\s*(\([^)]*\))?\s*\{\s*\}/, files: ["**/*.{ts,tsx,js,jsx,mjs}"] },
+  {
+    id: "console-log",
+    regex: /console\.(log|debug)\(/,
+    files: ["**/*.{ts,tsx,js,jsx}"],
+    allowKey: "consoleAllow",
+  },
+  {
+    id: "empty-catch",
+    regex: /catch\s*(\([^)]*\))?\s*\{\s*\}/,
+    files: ["**/*.{ts,tsx,js,jsx,mjs}"],
+  },
   { id: "broad-any", regex: /:\s*any\b/, files: ["**/*.{ts,tsx}"] },
 ];
 

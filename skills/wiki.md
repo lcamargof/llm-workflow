@@ -33,7 +33,8 @@ boundaries, invariants, gotchas, why.
 ## Operations
 
 **Ingest** (at stage closeout, part of the workflow closeout):
-- Rewrite the domain pages whose `sources` cover the diff. Rewrite, never append — pages are current-state syntheses, not journals. `log.md` is the only file that appends.
+- Update the domain pages the diff made wrong or stale; the drift lint is the backstop, not every touch. Rewrite, never append — pages are current-state syntheses, not journals. `log.md` is the only file that appends.
+- Brownfield repos: create a domain page the first time a stage touches that domain. Never backfill the whole repo in one sitting.
 - Record new decisions in `decisions.md` with the why.
 - Append the dated summary to `log.md` (lessons, corrections, friction).
 - Update `index.md` if pages were added or removed.
@@ -56,3 +57,5 @@ The wiki's value is synthesis, not accumulation.
 - One page per feature folder; when the feature dies, delete its page and its index line.
 - Every kept sentence must change a future agent's behavior. History belongs in `log.md` or git, not in pages.
 - Contradictions between pages are bugs: fix at the owner page and link, do not restate.
+- `log.md` is append-only but not immortal: periodically prune sections older than ~3 months down to entries still worth reading; git keeps the rest.
+- Domain `sources` globs must not use `{a,b}` braces (git pathspecs ignore them; drift would never fire) — list the globs separately.

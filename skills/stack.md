@@ -4,8 +4,8 @@ Use this when starting a project or adding tooling. These are defaults, not law 
 
 ## Frontend
 
-- React + Vite + TypeScript. Next.js only when SSR/SEO is a real requirement.
-- Jotai for client state (see `skills/code-standards.md` for atom patterns).
+- React + Vite + TypeScript. When SSR/routing framework is a real requirement, TanStack Start or Next.js — TanStack Start is sometimes the better fit; decide by user preference and the existing stack.
+- Zustand or Jotai for client state, by user preference and project scope (for Jotai atom patterns see `skills/code-standards.md`).
 - TailwindCSS + local shadcn-style components (checked-in source, not a runtime dependency).
 - React Query for server state. react-hook-form + zod for forms.
 - lucide icons.

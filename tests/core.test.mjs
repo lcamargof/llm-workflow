@@ -31,6 +31,15 @@ test("glob: literal dots are escaped", () => {
   assert.ok(!globToRegExp("*.ts").test("ats")); // "." must not act as regex any-char
 });
 
+test("glob: * inside {} alternatives works and never throws", () => {
+  const regex = globToRegExp("{*.ts,*.tsx}");
+  assert.ok(regex.test("a.ts"));
+  assert.ok(regex.test("b.tsx"));
+  assert.ok(!regex.test("a.css"));
+  assert.ok(!globToRegExp("src/{util*,lib}/x.ts").test("src/uti/x.ts"));
+  assert.ok(globToRegExp("src/{util*,lib}/x.ts").test("src/utilities/x.ts"));
+});
+
 test("matchesAny unions globs", () => {
   assert.ok(matchesAny("package.json", ["src/**", "package.json"]));
   assert.ok(!matchesAny("README.md", ["src/**", "package.json"]));

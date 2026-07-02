@@ -2,6 +2,10 @@
 
 Use this for staged implementation, scoped verification, debugging, and completion checks. Project-specific stack and product context live in `docs/wiki/project.md`, not here.
 
+## Quick Fix or Stage?
+
+Not every change is a stage. A change that is single-domain, touches no boundary or shared machinery, and needs no new decision is a **quick fix**: edit, run `node scripts/ai-loop/scope.mjs --base HEAD~1` (or the branch base), self-review the diff, commit. No ledger row, no ingest — the ledger-drift lint is the backstop that quick fixes haven't quietly become a feature. If you are debating which one it is, it's a stage.
+
 ## Operating Loop
 
 1. Define stage, non-goals, exit criteria, and base ref. Do not edit code until those exist; if deriving them is risky, ask the human.
@@ -17,8 +21,8 @@ Use this for staged implementation, scoped verification, debugging, and completi
 
 Every stage closes the same way. A lighter closeout is a skipped closeout.
 
-1. **Fresh full gate** after the final edit: run every command in the config `gate` list. Scoped verification is an inner-loop tool; it does not replace the full gate. Green gates are not proof of correct behavior — they are the floor.
-2. **Visual check for UI stages**: automation passing on a broken screen is a recorded failure mode. If the stage touched user-facing UI, inspect the rendered result (screenshot, smoke artifact, or manual run) before claiming done.
+1. **Fresh full gate** after the final edit: `node scripts/ai-loop/scope.mjs --gate` runs the config `gate` list and prints the verifier line for the progress row. Scoped verification is an inner-loop tool; it does not replace the full gate. Green gates are not proof of correct behavior — they are the floor.
+2. **Visual check for UI stages**: see `skills/ui-ux.md` § Verification — automation passing on a broken screen is a recorded failure mode.
 3. **One progress row** in `docs/wiki/progress.md`: stage, status, verifier line (the exact fresh commands that ran green), one line per reviewed lens, next action.
 4. **Wiki ingest**: update the domain pages whose `sources` cover the diff, decisions if any were made, and `log.md`. Then `node scripts/ai-loop/wiki-lint.mjs` green.
 
@@ -37,7 +41,7 @@ Run the ladder after understanding the task and tracing the touched flow:
 5. Can a tiny helper solve it?
 6. Only then add a new dependency or abstraction.
 
-Add abstractions only for real duplication or real boundaries. Use deliberate-shortcut comments only when they name the ceiling and the upgrade trigger.
+Lazy is not negligent — never simplify away: input validation at trust boundaries, error handling that prevents data loss, security measures, accessibility basics, or explicitly requested behavior. Use deliberate-shortcut comments only when they name the ceiling and the upgrade trigger.
 
 ## Session Budget
 

@@ -2,12 +2,20 @@
 // Usage: node scripts/ai-loop/scope.mjs --base <ref> [--dry-run] [--json]
 import process from "node:process";
 
-import { changedFiles, loadConfig, matchesAny, repoRoot, runCommand, scanRedFlags } from "./lib/core.mjs";
+import {
+  changedFiles,
+  loadConfig,
+  matchesAny,
+  repoRoot,
+  runCommand,
+  scanRedFlags,
+} from "./lib/core.mjs";
 
 const args = process.argv.slice(2);
+const gateMode = args.includes("--gate");
 const baseIndex = args.indexOf("--base");
-if (baseIndex === -1 || !args[baseIndex + 1]) {
-  console.error("usage: node scripts/ai-loop/scope.mjs --base <ref> [--dry-run] [--json]");
+if (!gateMode && (baseIndex === -1 || !args[baseIndex + 1])) {
+  console.error("usage: node scripts/ai-loop/scope.mjs --base <ref> [--dry-run] [--json] | --gate");
   process.exit(2);
 }
 const base = args[baseIndex + 1];
@@ -16,6 +24,22 @@ const asJson = args.includes("--json");
 
 const root = repoRoot();
 const config = loadConfig(root);
+
+// --gate: run the full closeout gate and print a ready-to-paste verifier line.
+if (gateMode) {
+  for (const command of config.gate) {
+    console.log(`\n▶ ${command}`);
+    try {
+      runCommand(command, root);
+    } catch {
+      console.error(`✗ gate failed: ${command}`);
+      process.exit(1);
+    }
+  }
+  console.log(`\nVerifier: ${config.gate.join(" + ")} (fresh, green)`);
+  process.exit(0);
+}
+
 const files = changedFiles(base);
 
 const commands = [];
@@ -39,7 +63,9 @@ if (asJson) {
   console.log(`scope: ${files.length} file(s) changed vs ${base}`);
   console.log(`lenses: ${lenses.join(", ")}`);
   for (const flag of redFlags) console.log(`red-flag: ${flag.file}:${flag.line}: ${flag.id}`);
-  console.log(commands.length === 0 ? "no verify commands mapped" : `commands:\n  ${commands.join("\n  ")}`);
+  console.log(
+    commands.length === 0 ? "no verify commands mapped" : `commands:\n  ${commands.join("\n  ")}`,
+  );
 }
 
 if (!dryRun) {

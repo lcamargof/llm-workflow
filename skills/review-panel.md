@@ -5,7 +5,7 @@ Use this when closing a stage or when scoped verification touches behavior, boun
 ## Required Flow
 
 1. `node scripts/ai-loop/scope.mjs --base <base-ref>` names the required lenses for the diff (from the config `lenses` path patterns).
-2. Spawn only the required reviewer lenses, at medium effort. Reserve highest effort for the main orchestrator when the architecture is genuinely hard.
+2. Spawn only the required reviewer lenses, at normal effort (not maximum). Reserve highest effort for the main orchestrator when the architecture is genuinely hard. For a small single-domain diff where only `correctness` fires, the orchestrator's own fresh pass over the full diff satisfies it — record it as `correctness: self`. Spawn actual reviewers when scope names security/product/complexity or the diff crosses a boundary.
 3. Give reviewers the changed files or diff, not raw session history.
 4. Verify each blocking claim before accepting it.
 5. Record one line per lens in the stage's progress row: who/what reviewed it and what was found or fixed.

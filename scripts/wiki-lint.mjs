@@ -7,7 +7,8 @@ import process from "node:process";
 import { git, loadConfig, repoRoot } from "./lib/core.mjs";
 
 const PAGE_TYPES = new Set(["domain", "decision", "context", "ledger", "log"]);
-const ABSOLUTE_PATH_PATTERN = /(\/Users\/|\/home\/|[A-Z]:\\)/;
+// Preceding boundary avoids URL false positives (example.com/home/...).
+const ABSOLUTE_PATH_PATTERN = /(^|[\s"'`(])(\/Users\/|\/home\/|[A-Z]:\\)/m;
 
 const root = repoRoot();
 const wikiDir = join(root, "docs/wiki");
@@ -50,7 +51,8 @@ for (const [name, page] of pages) {
   if (frontmatter.type === "domain" && (frontmatter.sources ?? []).length === 0) {
     errors.push(`${rel(path)}: domain page needs sources globs`);
   }
-  if (ABSOLUTE_PATH_PATTERN.test(body)) errors.push(`${rel(path)}: absolute local machine path in body`);
+  if (ABSOLUTE_PATH_PATTERN.test(body))
+    errors.push(`${rel(path)}: absolute local machine path in body`);
   for (const link of wikiLinks(body)) {
     if (!pages.has(link)) errors.push(`${rel(path)}: broken link [[${link}]]`);
   }
@@ -63,19 +65,40 @@ for (const [name, page] of pages) {
 if (hasCommits()) {
   // Ledger drift: the stage ledger must move with the repo.
   const progressPath = "docs/wiki/progress.md";
-  const lastLedgerCommit = git(["log", "-1", "--format=%H", "--", progressPath]);
+  const lastLedgerCommit = git(["log", "-1", "--format=%H", "--", progressPath], { cwd: root });
   if (lastLedgerCommit) {
-    const drift = Number(git(["rev-list", "--count", `${lastLedgerCommit}..HEAD`]));
+    const drift = Number(git(["rev-list", "--count", `${lastLedgerCommit}..HEAD`], { cwd: root }));
     if (drift > ledgerDriftLimit)
-      errors.push(`${progressPath}: ${drift} commits since last ledger update (limit ${ledgerDriftLimit})`);
+      errors.push(
+        `${progressPath}: ${drift} commits since last ledger update (limit ${ledgerDriftLimit})`,
+      );
   }
 
   // Domain drift: pages must be re-ingested when their sources keep changing.
   for (const [name, page] of pages) {
     if (page.frontmatter.type !== "domain") continue;
-    const pathspecs = (page.frontmatter.sources ?? []).map((glob) => `:(glob)${glob}`);
+    const sources = page.frontmatter.sources ?? [];
+    for (const glob of sources) {
+      // git :(glob) pathspecs silently match nothing for brace patterns — drift would never fire.
+      if (glob.includes("{"))
+        errors.push(`${rel(page.path)}: brace glob "${glob}" unsupported in sources`);
+    }
+    const pathspecs = sources.filter((glob) => !glob.includes("{")).map((glob) => `:(glob)${glob}`);
+    if (pathspecs.length === 0) continue;
     const commits = Number(
-      git(["rev-list", "--count", `--since=${page.frontmatter.updated}T23:59:59`, "HEAD", "--", ...pathspecs]),
+      git(
+        [
+          "rev-list",
+          "--count",
+          `--since=${page.frontmatter.updated}T23:59:59`,
+          "HEAD",
+          "--",
+          ...pathspecs,
+        ],
+        {
+          cwd: root,
+        },
+      ),
     );
     if (commits > domainDriftLimit) {
       errors.push(
@@ -93,7 +116,7 @@ console.log(`wiki-lint: ${pages.size} pages green`);
 
 function hasCommits() {
   try {
-    git(["rev-parse", "--verify", "HEAD"]);
+    git(["rev-parse", "--verify", "HEAD"], { cwd: root });
     return true;
   } catch {
     return false;
@@ -112,7 +135,7 @@ function walkMarkdown(dir) {
 
 // Tiny YAML subset: `key: value` lines plus `- item` lists under a bare `key:` line.
 function parseFrontmatter(raw) {
-  const match = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(raw);
+  const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(raw.replaceAll("\r\n", "\n"));
   if (!match) return null;
   const frontmatter = {};
   let listKey = null;

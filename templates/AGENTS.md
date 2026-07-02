@@ -8,6 +8,7 @@ Loader, not playbook. Reusable workflow rules live in `skills/` (kit-owned, upda
 - Before writing or reviewing app code, read `skills/code-standards.md`.
 - Before closing a stage, read `skills/review-panel.md` and `skills/wiki.md`.
 - Before user-facing UI work, read `skills/ui-ux.md`.
+- When setting up or changing the visual token system, read `skills/design.md`.
 - Before adding tooling or starting a project surface, read `skills/stack.md`.
 - For project context (product, stack specifics, risks, UI register), read `docs/wiki/project.md`.
 - When exploring project knowledge, start at `docs/wiki/index.md` and follow links.
@@ -16,15 +17,14 @@ Loader, not playbook. Reusable workflow rules live in `skills/` (kit-owned, upda
 
 ## Default Loop
 
-- `node scripts/ai-loop/workflow-start.mjs --stage "<stage>"` for real stages; implement the smallest complete slice.
+- Quick fix vs stage: `skills/workflow.md` § Quick Fix or Stage decides; when debating, it's a stage.
+- `node scripts/ai-loop/workflow-start.mjs --stage "<stage>"` for stages; implement the smallest complete slice.
 - Inner loop: `node scripts/ai-loop/scope.mjs --base <base-ref>` (verify commands + required review lenses + red flags for the touched files).
-- Closeout: fresh full gate (config `gate`), visual check for UI stages, one progress row, wiki ingest, `node scripts/ai-loop/wiki-lint.mjs` green.
+- Closeout: `scope.mjs --gate`, visual check for UI stages, one progress row, wiki ingest, `node scripts/ai-loop/wiki-lint.mjs` green.
 
 ## Review Budget
 
-- Review changed files or the diff, not the whole repo.
-- Run only the risk-routed lenses `scope.mjs` names. No multi-persona fan-out by default.
-- Verify reviewer claims before implementing them. Reject correct-but-out-of-stage suggestions to backlog.
+Risk-routed lenses only, claims verified before adoption — `skills/review-panel.md` owns the rules.
 
 ## Stop Conditions
 
