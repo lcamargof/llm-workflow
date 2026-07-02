@@ -23,6 +23,8 @@ Fresh install scaffolds `AGENTS.md`, `CLAUDE.md`, `ai-loop.config.json`, and `do
 
 Ownership: the kit owns `skills/` and `scripts/ai-loop/` (replaced wholesale on `--update`). Everything else is yours and never touched after scaffolding.
 
+**Existing repos**: if the repo already has agent context (CLAUDE.md, AGENTS.md, .cursorrules…), the installer detects it and points at `skills/adopt.md` — a non-destructive merge procedure where the repo's existing rules win on conflict and every rule ends up in the wiki, the config, an override note, or an explicit drop log. Glob note: `*` stays within a path segment; use `**` to cross directories (`**/storage/**`, not `**/*storage*`).
+
 ## The loop
 
 ```

@@ -17,6 +17,16 @@ Use this when closing a stage or when scoped verification touches behavior, boun
 - `product`: required for UI, user-facing behavior, or prompts (config `lenses.product` globs).
 - `complexity`: required for shared machinery, dependencies, config, or broad diffs (config `lenses.complexity` globs).
 
+## Running Reviews
+
+- Rules are identity-blind: classify risk by code touched, behavior changed, and blast radius — never by who is driving the work.
+- Run reviewers as background/parallel work and keep building; reconcile findings in one pass when they land. Do not re-litigate settled findings.
+- Multi-stage features: triage each stage cheaply (typecheck + lint + self-review cover mechanical stages), but always review the whole feature at least once at the end.
+
+## Risk Escalation
+
+Some surfaces need a human even when the implementation is requested and green: money math and units, auth/security/compliance flows, persistence schemas and API contracts, shared component defaults, global state/providers/routing, cross-feature imports. Implement when asked, but the handoff must say **human review required** and include: files touched, behavior changed, why escalation, validation performed, remaining risk or assumptions.
+
 ## Receiving Review
 
 Reviewer output is not automatically truth.

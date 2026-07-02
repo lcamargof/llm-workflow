@@ -8,11 +8,14 @@ The dumb solution wins. Code an agent or a human can rewrite in a week beats cod
 
 ## Shape
 
-- Domain-gated feature folders: each feature owns its local types, tests, fixtures, and boundaries.
-- Share across domains through typed interfaces, not ambient globals or cross-feature imports.
+- The containment test: a feature should be addable without understanding the whole app, and deletable in one `rm -rf` without breaking anything else.
+- Domain-gated feature folders: each feature owns its local types, tests, fixtures, and boundaries. Shared code must not import from a feature folder; features must not reach into each other's internals — lift shared needs up.
+- Fix local bugs locally: never solve a feature's layout or behavior issue by changing shared containers, providers, routing shells, or component defaults unless the task is explicitly about that shared surface. Shared components keep their defaults; add behavior via opt-in props.
+- Rule of three, counted in blocks not lines: two near-identical blocks stay; the third copy of a structural block triggers extraction as part of that change. Guard the opposite failure — if covering the variations needs more than ~2–3 params or branches, the duplication was fine.
 - Keep logic inline until an extraction names a real concept, hides a complex boundary, or is reused.
 - No barrel files that force unrelated modules to load.
-- Components under ~150 lines; extract logic into hooks, keep components dumb.
+- Size gates: components under ~200 lines, files under ~300; anything over ~500 is a review-required flag, over ~1000 is cleanup work, not a normal feature shape.
+- Route/flow/step components orchestrate only: select data, call hooks, compose UI. If one owns network reads, timers, animation state, or business derivation, extract that logic before adding more.
 - Early returns over nested conditionals and `else`.
 - Prefer `const`; avoid reassignment unless it materially simplifies control flow.
 - Helpers live below the exported function they support when that keeps the happy path readable.
