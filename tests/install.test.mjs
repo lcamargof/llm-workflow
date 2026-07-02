@@ -41,6 +41,33 @@ test("fresh install scaffolds everything", () => {
   }
 });
 
+test("fresh install with existing agent context points at adopt.md", () => {
+  const target = freshTarget();
+  try {
+    writeFileSync(join(target, "CLAUDE.md"), "# Existing rules");
+    writeFileSync(join(target, ".cursorrules"), "old rules");
+    const output = install(target);
+    assert.ok(output.includes("skills/adopt.md"), "missing adopt.md pointer");
+    assert.ok(output.includes("CLAUDE.md"), "detected files not named");
+    assert.ok(output.includes(".cursorrules"), "detected files not named");
+    // Pre-existing context is never overwritten by scaffolding.
+    assert.equal(readFileSync(join(target, "CLAUDE.md"), "utf8"), "# Existing rules");
+  } finally {
+    rmSync(target, { recursive: true, force: true });
+  }
+});
+
+test("fresh install into a clean repo does not mention adoption", () => {
+  const target = freshTarget();
+  try {
+    const output = install(target);
+    assert.ok(!output.includes("adopt.md"), "clean install should not route to adopt.md");
+    assert.ok(output.includes("next: edit ai-loop.config.json"), "missing fresh-install next step");
+  } finally {
+    rmSync(target, { recursive: true, force: true });
+  }
+});
+
 test("update replaces kit files but never project files", () => {
   const target = freshTarget();
   try {

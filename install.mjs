@@ -37,6 +37,17 @@ if (!existsSync(join(target, ".git"))) {
   console.error(`warning: ${target} is not a git repository — the loop's gates assume git`);
 }
 
+// Brownfield detection must run before scaffolding creates these files.
+const AGENT_CONTEXT_FILES = [
+  "CLAUDE.md",
+  "AGENTS.md",
+  ".cursorrules",
+  ".github/copilot-instructions.md",
+];
+const existingContext = isUpdate
+  ? []
+  : AGENT_CONTEXT_FILES.filter((file) => existsSync(join(target, file)));
+
 // --- kit-owned directories (wholesale) ---
 replaceOwnedDir(join(kitRoot, "skills"), join(target, "skills"));
 replaceOwnedDir(join(kitRoot, "scripts"), join(target, "scripts/ai-loop"));
@@ -69,9 +80,16 @@ if (isUpdate) {
 
 console.log(`ai-loop v${KIT_VERSION} ${isUpdate ? "updated in" : "installed into"} ${target}`);
 if (!isUpdate) {
-  console.log(
-    "next: edit ai-loop.config.json (gate + verify rules for this repo), then fill docs/wiki/project.md",
-  );
+  if (existingContext.length > 0) {
+    console.log(`existing agent context detected: ${existingContext.join(", ")}`);
+    console.log(
+      "this is a brownfield adoption — follow skills/adopt.md (repo rules win on conflict; nothing deleted until re-homed; router migrates last)",
+    );
+  } else {
+    console.log(
+      "next: edit ai-loop.config.json (gate + verify rules for this repo), then fill docs/wiki/project.md",
+    );
+  }
 }
 
 function replaceOwnedDir(source, destination) {
