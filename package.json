@@ -1,0 +1,10 @@
+{
+  "name": "ai-loop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Portable, agent-agnostic AI-collaboration kit: workflow loop, wiki memory, review discipline, code standards.",
+  "scripts": {
+    "test": "node --test 'tests/*.test.mjs'"
+  }
+}

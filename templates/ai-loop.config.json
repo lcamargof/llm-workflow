@@ -1,0 +1,39 @@
+{
+  "kitVersion": 1,
+  "gate": [
+    "pnpm typecheck",
+    "pnpm lint",
+    "pnpm run format:check",
+    "pnpm test"
+  ],
+  "verify": [
+    {
+      "name": "format",
+      "globs": ["**/*.{ts,tsx,js,jsx,mjs,json,css}"],
+      "commands": ["pnpm run format:check"]
+    },
+    {
+      "name": "lint",
+      "globs": ["**/*.{ts,tsx,js,jsx,mjs}"],
+      "commands": ["pnpm lint"]
+    },
+    {
+      "name": "typecheck",
+      "globs": ["src/**", "tests/**", "tsconfig*.json", "package.json"],
+      "commands": ["pnpm typecheck"]
+    },
+    {
+      "name": "unit-tests",
+      "globs": ["src/**", "tests/**"],
+      "commands": ["pnpm test"]
+    }
+  ],
+  "lenses": {
+    "security": ["src/server/**", "**/auth/**", "**/*storage*", "**/*secret*"],
+    "product": ["src/**/*.tsx", "src/**/*.css"],
+    "complexity": ["package.json", "*.config.*", "scripts/**", "skills/**"]
+  },
+  "redFlags": {
+    "consoleAllow": []
+  }
+}
