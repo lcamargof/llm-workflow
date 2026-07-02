@@ -45,3 +45,9 @@ closeout: full gate + visual check (UI) + progress row + wiki ingest + wiki-lint
 ## S-tier bar
 
 The kit is done when, measured not vibed: adoption of a fresh repo is one install + one config edit (<10 min to first productive loop); a complex multi-file feature ships with zero gates routed around (ledger-drift alarm proves it); the wiki stays in sync unprompted (wiki-lint green incl. domain drift); kit self-tests and purity checks are green.
+
+## Backlog
+
+- `skills/` at target-repo root is a namespace grab in product repos; a `.ai-loop/` layout is a breaking change (installer + router + adopted repos) — revisit at a major version.
+- `workflow-start.mjs` and `scope.mjs` have no tests (core, wiki-lint, install, purity are covered).
+- Page-length wiki-lint check and per-page drift overrides deliberately not built — no observed failure yet (first adoption's max page: 69 body lines); revisit if a page actually blows past ~100 lines or a drift alarm false-fires in practice.
