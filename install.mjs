@@ -1,10 +1,10 @@
-// Install or update the ai-loop kit in a target repo.
+// Install or update the llm-workflow kit in a target repo.
 // Usage: node install.mjs <target-repo> [--update]
 //
 // Ownership contract:
-//   kit-owned, replaced wholesale on --update:  <target>/skills/, <target>/scripts/ai-loop/
+//   kit-owned, replaced wholesale on --update:  <target>/skills/, <target>/scripts/llm-workflow/
 //   project-owned, scaffolded once, never touched again: AGENTS.md, CLAUDE.md,
-//   ai-loop.config.json, docs/wiki/
+//   llm-workflow.config.json, docs/wiki/
 import {
   cpSync,
   existsSync,
@@ -50,13 +50,13 @@ const existingContext = isUpdate
 
 // --- kit-owned directories (wholesale) ---
 replaceOwnedDir(join(kitRoot, "skills"), join(target, "skills"));
-replaceOwnedDir(join(kitRoot, "scripts"), join(target, "scripts/ai-loop"));
+replaceOwnedDir(join(kitRoot, "scripts"), join(target, "scripts/llm-workflow"));
 
 // --- project-owned scaffolding (fresh install only; skip anything that exists) ---
 const today = new Date().toISOString().slice(0, 10);
 scaffold("templates/AGENTS.md", "AGENTS.md");
 scaffold("templates/CLAUDE.md", "CLAUDE.md");
-scaffold("templates/ai-loop.config.json", "ai-loop.config.json");
+scaffold("templates/llm-workflow.config.json", "llm-workflow.config.json");
 if (!existsSync(join(target, "docs/wiki"))) {
   mkdirSync(join(target, "docs/wiki/domains"), { recursive: true });
   for (const entry of readdirSync(join(kitRoot, "templates/wiki"))) {
@@ -67,7 +67,7 @@ if (!existsSync(join(target, "docs/wiki"))) {
 }
 
 if (isUpdate) {
-  const configPath = join(target, "ai-loop.config.json");
+  const configPath = join(target, "llm-workflow.config.json");
   if (existsSync(configPath)) {
     const config = JSON.parse(readFileSync(configPath, "utf8"));
     if (config.kitVersion !== KIT_VERSION) {
@@ -78,7 +78,7 @@ if (isUpdate) {
   }
 }
 
-console.log(`ai-loop v${KIT_VERSION} ${isUpdate ? "updated in" : "installed into"} ${target}`);
+console.log(`llm-workflow v${KIT_VERSION} ${isUpdate ? "updated in" : "installed into"} ${target}`);
 if (!isUpdate) {
   if (existingContext.length > 0) {
     console.log(`existing agent context detected: ${existingContext.join(", ")}`);
@@ -87,7 +87,7 @@ if (!isUpdate) {
     );
   } else {
     console.log(
-      "next: edit ai-loop.config.json (gate + verify rules for this repo), then fill docs/wiki/project.md",
+      "next: edit llm-workflow.config.json (gate + verify rules for this repo), then fill docs/wiki/project.md",
     );
   }
 }

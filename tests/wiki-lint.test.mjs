@@ -17,7 +17,7 @@ function page(frontmatter, body = "") {
 }
 
 function fixtureRepo(pages) {
-  const dir = mkdtempSync(join(tmpdir(), "ai-loop-wiki-"));
+  const dir = mkdtempSync(join(tmpdir(), "llm-workflow-wiki-"));
   execFileSync("git", ["init", "-q", dir]);
   mkdirSync(join(dir, "docs/wiki/domains"), { recursive: true });
   for (const [name, content] of Object.entries(pages)) {

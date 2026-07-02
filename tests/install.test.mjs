@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const kitRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function freshTarget() {
-  const dir = mkdtempSync(join(tmpdir(), "ai-loop-test-"));
+  const dir = mkdtempSync(join(tmpdir(), "llm-workflow-test-"));
   mkdirSync(join(dir, ".git")); // enough to pass the git check
   return dir;
 }
@@ -24,11 +24,11 @@ test("fresh install scaffolds everything", () => {
     install(target);
     for (const path of [
       "skills/workflow.md",
-      "scripts/ai-loop/scope.mjs",
-      "scripts/ai-loop/lib/core.mjs",
+      "scripts/llm-workflow/scope.mjs",
+      "scripts/llm-workflow/lib/core.mjs",
       "AGENTS.md",
       "CLAUDE.md",
-      "ai-loop.config.json",
+      "llm-workflow.config.json",
       "docs/wiki/index.md",
       "docs/wiki/progress.md",
     ]) {
@@ -62,7 +62,7 @@ test("fresh install into a clean repo does not mention adoption", () => {
   try {
     const output = install(target);
     assert.ok(!output.includes("adopt.md"), "clean install should not route to adopt.md");
-    assert.ok(output.includes("next: edit ai-loop.config.json"), "missing fresh-install next step");
+    assert.ok(output.includes("next: edit llm-workflow.config.json"), "missing fresh-install next step");
   } finally {
     rmSync(target, { recursive: true, force: true });
   }
@@ -72,13 +72,13 @@ test("update replaces kit files but never project files", () => {
   const target = freshTarget();
   try {
     install(target);
-    writeFileSync(join(target, "ai-loop.config.json"), JSON.stringify({ kitVersion: 0, gate: ["true"], verify: [] }, null, 2));
+    writeFileSync(join(target, "llm-workflow.config.json"), JSON.stringify({ kitVersion: 0, gate: ["true"], verify: [] }, null, 2));
     writeFileSync(join(target, "docs/wiki/project.md"), "MINE");
     writeFileSync(join(target, "skills/workflow.md"), "STALE KIT FILE");
     install(target, "--update");
     assert.equal(readFileSync(join(target, "docs/wiki/project.md"), "utf8"), "MINE");
     assert.ok(readFileSync(join(target, "skills/workflow.md"), "utf8").includes("# Workflow Skill"));
-    assert.equal(JSON.parse(readFileSync(join(target, "ai-loop.config.json"), "utf8")).kitVersion, 1);
+    assert.equal(JSON.parse(readFileSync(join(target, "llm-workflow.config.json"), "utf8")).kitVersion, 1);
   } finally {
     rmSync(target, { recursive: true, force: true });
   }

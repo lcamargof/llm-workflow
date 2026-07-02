@@ -1,4 +1,4 @@
-# ai-loop
+# llm-workflow
 
 A portable, agent-agnostic AI-collaboration kit: the workflow loop, wiki-based project memory, review discipline, and code standards, extracted from a real project and dieted down to what agents actually follow under pressure.
 
@@ -16,12 +16,12 @@ node install.mjs /path/to/repo          # fresh install
 node install.mjs /path/to/repo --update # pull kit updates (project files untouched)
 ```
 
-Fresh install scaffolds `AGENTS.md`, `CLAUDE.md`, `ai-loop.config.json`, and `docs/wiki/`, then you:
+Fresh install scaffolds `AGENTS.md`, `CLAUDE.md`, `llm-workflow.config.json`, and `docs/wiki/`, then you:
 
-1. Edit `ai-loop.config.json`: the `gate` (full closeout commands) and `verify` rules (glob groups → commands) for this repo.
+1. Edit `llm-workflow.config.json`: the `gate` (full closeout commands) and `verify` rules (glob groups → commands) for this repo.
 2. Fill `docs/wiki/project.md` (product, stack specifics, safety, UI register).
 
-Ownership: the kit owns `skills/` and `scripts/ai-loop/` (replaced wholesale on `--update`). Everything else is yours and never touched after scaffolding.
+Ownership: the kit owns `skills/` and `scripts/llm-workflow/` (replaced wholesale on `--update`). Everything else is yours and never touched after scaffolding.
 
 **Existing repos**: if the repo already has agent context (CLAUDE.md, AGENTS.md, .cursorrules…), the installer detects it and points at `skills/adopt.md` — a non-destructive merge procedure where the repo's existing rules win on conflict and every rule ends up in the wiki, the config, an override note, or an explicit drop log. Glob note: `*` stays within a path segment; use `**` to cross directories (`**/storage/**`, not `**/*storage*`).
 
@@ -30,7 +30,7 @@ Ownership: the kit owns `skills/` and `scripts/ai-loop/` (replaced wholesale on 
 Told to integrate this kit into a repo? The whole procedure:
 
 1. `node <kit>/install.mjs <repo>` — the output says whether this is a fresh install or a brownfield adoption.
-2. Fresh repo: edit `ai-loop.config.json` (gate + verify globs mapped to the repo's real commands), fill `docs/wiki/project.md`, then `node scripts/ai-loop/wiki-lint.mjs`.
+2. Fresh repo: edit `llm-workflow.config.json` (gate + verify globs mapped to the repo's real commands), fill `docs/wiki/project.md`, then `node scripts/llm-workflow/wiki-lint.mjs`.
 3. Brownfield (existing agent context): follow `skills/adopt.md` end to end — zero information loss, repo rules win, router migrates last.
 4. Done when: wiki-lint is green, `scope.mjs --base HEAD --dry-run` maps sensible commands for a sample diff, and the repo's single agent entry point is the `AGENTS.md` router.
 
@@ -59,6 +59,6 @@ The kit is done when, measured not vibed: adoption of a fresh repo is one instal
 
 ## Backlog
 
-- `skills/` at target-repo root is a namespace grab in product repos; a `.ai-loop/` layout is a breaking change (installer + router + adopted repos) — revisit at a major version.
+- `skills/` at target-repo root is a namespace grab in product repos; a `.llm-workflow/` layout is a breaking change (installer + router + adopted repos) — revisit at a major version.
 - `workflow-start.mjs` and `scope.mjs` have no tests (core, wiki-lint, install, purity are covered).
 - Page-length wiki-lint check and per-page drift overrides deliberately not built — no observed failure yet (first adoption's max page: 69 body lines); revisit if a page actually blows past ~100 lines or a drift alarm false-fires in practice.

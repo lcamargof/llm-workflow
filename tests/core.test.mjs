@@ -49,7 +49,7 @@ test("matchesAny unions globs", () => {
 });
 
 test("scanRedFlags catches multi-line empty catch and reports its line", () => {
-  const root = mkdtempSync(join(tmpdir(), "ai-loop-flags-"));
+  const root = mkdtempSync(join(tmpdir(), "llm-workflow-flags-"));
   try {
     mkdirSync(join(root, "src"));
     writeFileSync(

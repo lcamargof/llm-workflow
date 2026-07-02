@@ -10,4 +10,4 @@ Append-only chronological record: lessons, corrections, friction. Newest section
 
 ## {{DATE}}
 
-- Wiki initialized by ai-loop install.
+- Wiki initialized by llm-workflow install.
