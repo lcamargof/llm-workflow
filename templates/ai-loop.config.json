@@ -1,11 +1,6 @@
 {
   "kitVersion": 1,
-  "gate": [
-    "pnpm typecheck",
-    "pnpm lint",
-    "pnpm run format:check",
-    "pnpm test"
-  ],
+  "gate": ["pnpm typecheck", "pnpm lint", "pnpm run format:check", "pnpm test"],
   "verify": [
     {
       "name": "format",

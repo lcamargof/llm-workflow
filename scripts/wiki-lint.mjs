@@ -43,8 +43,10 @@ for (const path of walkMarkdown(wikiDir)) {
 for (const [name, page] of pages) {
   const { frontmatter, body, path } = page;
   if (!frontmatter.title) errors.push(`${rel(path)}: frontmatter missing title`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(frontmatter.updated ?? "")) errors.push(`${rel(path)}: frontmatter updated must be YYYY-MM-DD`);
-  if (!PAGE_TYPES.has(frontmatter.type)) errors.push(`${rel(path)}: frontmatter type must be one of ${[...PAGE_TYPES].join("|")}`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(frontmatter.updated ?? ""))
+    errors.push(`${rel(path)}: frontmatter updated must be YYYY-MM-DD`);
+  if (!PAGE_TYPES.has(frontmatter.type))
+    errors.push(`${rel(path)}: frontmatter type must be one of ${[...PAGE_TYPES].join("|")}`);
   if (frontmatter.type === "domain" && (frontmatter.sources ?? []).length === 0) {
     errors.push(`${rel(path)}: domain page needs sources globs`);
   }
@@ -64,16 +66,21 @@ if (hasCommits()) {
   const lastLedgerCommit = git(["log", "-1", "--format=%H", "--", progressPath]);
   if (lastLedgerCommit) {
     const drift = Number(git(["rev-list", "--count", `${lastLedgerCommit}..HEAD`]));
-    if (drift > ledgerDriftLimit) errors.push(`${progressPath}: ${drift} commits since last ledger update (limit ${ledgerDriftLimit})`);
+    if (drift > ledgerDriftLimit)
+      errors.push(`${progressPath}: ${drift} commits since last ledger update (limit ${ledgerDriftLimit})`);
   }
 
   // Domain drift: pages must be re-ingested when their sources keep changing.
   for (const [name, page] of pages) {
     if (page.frontmatter.type !== "domain") continue;
     const pathspecs = (page.frontmatter.sources ?? []).map((glob) => `:(glob)${glob}`);
-    const commits = Number(git(["rev-list", "--count", `--since=${page.frontmatter.updated}T23:59:59`, "HEAD", "--", ...pathspecs]));
+    const commits = Number(
+      git(["rev-list", "--count", `--since=${page.frontmatter.updated}T23:59:59`, "HEAD", "--", ...pathspecs]),
+    );
     if (commits > domainDriftLimit) {
-      errors.push(`${rel(page.path)}: ${commits} commits touched its sources since ${page.frontmatter.updated} (limit ${domainDriftLimit}) — re-ingest [[${name}]]`);
+      errors.push(
+        `${rel(page.path)}: ${commits} commits touched its sources since ${page.frontmatter.updated} (limit ${domainDriftLimit}) — re-ingest [[${name}]]`,
+      );
     }
   }
 }

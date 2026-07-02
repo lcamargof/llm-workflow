@@ -26,7 +26,10 @@ export function changedFiles(baseRef) {
 export function isTrackedTreeClean() {
   // Untracked files do not block starting a stage; modified/staged tracked files do.
   const status = git(["status", "--porcelain"]);
-  return status.split("\n").filter(Boolean).every((line) => line.startsWith("??"));
+  return status
+    .split("\n")
+    .filter(Boolean)
+    .every((line) => line.startsWith("??"));
 }
 
 // Glob subset: ** (any segments), * (within segment), {a,b} literal alternation.
@@ -75,7 +78,8 @@ export function loadConfig(root = repoRoot()) {
   const path = join(root, CONFIG_FILE);
   if (!existsSync(path)) throw new Error(`${CONFIG_FILE} not found at ${root} — run the ai-loop installer first`);
   const config = JSON.parse(readFileSync(path, "utf8"));
-  if (!Array.isArray(config.gate) || config.gate.length === 0) throw new Error("config.gate must be a non-empty array of commands");
+  if (!Array.isArray(config.gate) || config.gate.length === 0)
+    throw new Error("config.gate must be a non-empty array of commands");
   if (!Array.isArray(config.verify)) throw new Error("config.verify must be an array of {name, globs, commands} rules");
   for (const rule of config.verify) {
     if (!rule.name || !Array.isArray(rule.globs) || !Array.isArray(rule.commands)) {
