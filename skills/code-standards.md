@@ -52,6 +52,10 @@ The dumb solution wins. Code an agent or a human can rewrite in a week beats cod
 - Tests are typechecked like source. Failing tests get root-caused, never skipped.
 - Tests are deletable when requirements change — they are feedback loops, not coverage metrics.
 
+## Migrations
+
+Safe and dumb: create new code in parallel (never delete/rename old code mid-migration); migrate one consumer at a time to surface breakage incrementally; tighten types case by case, no big-bang type changes; write tests that pin current behavior before migrating, re-run after; delete old code last, only when every consumer is migrated and tested.
+
 ## What Not To Do
 
 Abstractions for one-time use. Features nobody asked for. Clever one-liners that sacrifice readability. Error handling for impossible scenarios. Optimizing before it's slow. Custom config where the framework default works.
