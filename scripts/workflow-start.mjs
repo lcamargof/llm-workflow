@@ -15,9 +15,7 @@ if (!stage.trim()) {
 }
 
 if (!isTrackedTreeClean() && !args.includes("--allow-dirty")) {
-  console.error(
-    "tracked tree is dirty — commit, stash, or inspect first (untracked files are fine)",
-  );
+  console.error("tracked tree is dirty — commit, stash, or inspect first (untracked files are fine)");
   process.exit(1);
 }
 

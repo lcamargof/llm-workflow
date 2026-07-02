@@ -77,13 +77,11 @@ export const CONFIG_FILE = "ai-loop.config.json";
 
 export function loadConfig(root = repoRoot()) {
   const path = join(root, CONFIG_FILE);
-  if (!existsSync(path))
-    throw new Error(`${CONFIG_FILE} not found at ${root} — run the ai-loop installer first`);
+  if (!existsSync(path)) throw new Error(`${CONFIG_FILE} not found at ${root} — run the ai-loop installer first`);
   const config = JSON.parse(readFileSync(path, "utf8"));
   if (!Array.isArray(config.gate) || config.gate.length === 0)
     throw new Error("config.gate must be a non-empty array of commands");
-  if (!Array.isArray(config.verify))
-    throw new Error("config.verify must be an array of {name, globs, commands} rules");
+  if (!Array.isArray(config.verify)) throw new Error("config.verify must be an array of {name, globs, commands} rules");
   for (const rule of config.verify) {
     if (!rule.name || !Array.isArray(rule.globs) || !Array.isArray(rule.commands)) {
       throw new Error(`invalid verify rule: ${JSON.stringify(rule)}`);
@@ -97,9 +95,7 @@ export function loadConfig(root = repoRoot()) {
 export function runCommand(command, cwd) {
   const [bin, ...args] = command.split(/\s+/);
   if (bin.includes("="))
-    throw new Error(
-      `env prefixes are not supported ("${bin}") — wrap the command in a package script`,
-    );
+    throw new Error(`env prefixes are not supported ("${bin}") — wrap the command in a package script`);
   execFileSync(bin, args, { stdio: "inherit", cwd });
 }
 

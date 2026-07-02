@@ -2,14 +2,7 @@
 // Usage: node scripts/ai-loop/scope.mjs --base <ref> [--dry-run] [--json]
 import process from "node:process";
 
-import {
-  changedFiles,
-  loadConfig,
-  matchesAny,
-  repoRoot,
-  runCommand,
-  scanRedFlags,
-} from "./lib/core.mjs";
+import { changedFiles, loadConfig, matchesAny, repoRoot, runCommand, scanRedFlags } from "./lib/core.mjs";
 
 const args = process.argv.slice(2);
 const gateMode = args.includes("--gate");
@@ -63,9 +56,7 @@ if (asJson) {
   console.log(`scope: ${files.length} file(s) changed vs ${base}`);
   console.log(`lenses: ${lenses.join(", ")}`);
   for (const flag of redFlags) console.log(`red-flag: ${flag.file}:${flag.line}: ${flag.id}`);
-  console.log(
-    commands.length === 0 ? "no verify commands mapped" : `commands:\n  ${commands.join("\n  ")}`,
-  );
+  console.log(commands.length === 0 ? "no verify commands mapped" : `commands:\n  ${commands.join("\n  ")}`);
 }
 
 if (!dryRun) {

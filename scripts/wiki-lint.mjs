@@ -51,8 +51,7 @@ for (const [name, page] of pages) {
   if (frontmatter.type === "domain" && (frontmatter.sources ?? []).length === 0) {
     errors.push(`${rel(path)}: domain page needs sources globs`);
   }
-  if (ABSOLUTE_PATH_PATTERN.test(body))
-    errors.push(`${rel(path)}: absolute local machine path in body`);
+  if (ABSOLUTE_PATH_PATTERN.test(body)) errors.push(`${rel(path)}: absolute local machine path in body`);
   for (const link of wikiLinks(body)) {
     if (!pages.has(link)) errors.push(`${rel(path)}: broken link [[${link}]]`);
   }
@@ -69,9 +68,7 @@ if (hasCommits()) {
   if (lastLedgerCommit) {
     const drift = Number(git(["rev-list", "--count", `${lastLedgerCommit}..HEAD`], { cwd: root }));
     if (drift > ledgerDriftLimit)
-      errors.push(
-        `${progressPath}: ${drift} commits since last ledger update (limit ${ledgerDriftLimit})`,
-      );
+      errors.push(`${progressPath}: ${drift} commits since last ledger update (limit ${ledgerDriftLimit})`);
   }
 
   // Domain drift: pages must be re-ingested when their sources keep changing.
@@ -80,25 +77,14 @@ if (hasCommits()) {
     const sources = page.frontmatter.sources ?? [];
     for (const glob of sources) {
       // git :(glob) pathspecs silently match nothing for brace patterns — drift would never fire.
-      if (glob.includes("{"))
-        errors.push(`${rel(page.path)}: brace glob "${glob}" unsupported in sources`);
+      if (glob.includes("{")) errors.push(`${rel(page.path)}: brace glob "${glob}" unsupported in sources`);
     }
     const pathspecs = sources.filter((glob) => !glob.includes("{")).map((glob) => `:(glob)${glob}`);
     if (pathspecs.length === 0) continue;
     const commits = Number(
-      git(
-        [
-          "rev-list",
-          "--count",
-          `--since=${page.frontmatter.updated}T23:59:59`,
-          "HEAD",
-          "--",
-          ...pathspecs,
-        ],
-        {
-          cwd: root,
-        },
-      ),
+      git(["rev-list", "--count", `--since=${page.frontmatter.updated}T23:59:59`, "HEAD", "--", ...pathspecs], {
+        cwd: root,
+      }),
     );
     if (commits > domainDriftLimit) {
       errors.push(
