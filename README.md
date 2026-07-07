@@ -1,6 +1,14 @@
 # llm-workflow
 
-A portable, agent-agnostic AI-collaboration kit: the workflow loop, wiki-based project memory, review discipline, and code standards, extracted from a real project and dieted down to what agents actually follow under pressure.
+A portable, agent-agnostic AI-collaboration kit: the workflow loop, wiki-based project memory, risk-routed review, and code standards — extracted from a real production codebase and dieted down to what agents actually follow under pressure.
+
+## Why this exists
+
+Getting LLMs to write code is not the problem anymore. The problem is what all that code does to a codebase: duplicated business logic, abstractions over abstractions, diffs that pass every check while quietly changing the shape of the project.
+
+The bet behind this kit: codebases have to move toward smaller pieces with explicit boundaries. Some pieces are load-bearing — money math, protocol logic, trust boundaries — those get hard boundaries, forced review lenses, and sometimes hand-written code. The rest should be cheap to replace: verify the behavior, ship it, burn and rewrite it when requirements change. The kit's job is to keep that split honest.
+
+So it optimizes generated code for three properties: easy to review, easy to replace, hard to let break unrelated parts of the product. Not autonomy. Not velocity. Those take care of themselves when review stops being the bottleneck.
 
 ## Philosophy
 
@@ -8,6 +16,12 @@ A portable, agent-agnostic AI-collaboration kit: the workflow loop, wiki-based p
 - **The dumb solution wins.** Zero dependencies, plain markdown, one JSON config.
 - **Evidence over trust.** No completion claims without fresh verification; reviewer output is verified before it's believed; a skipped review is recorded as skipped, not passed.
 - **The wiki compounds.** Project knowledge lives in `docs/wiki/` (Karpathy LLM-Wiki style: interlinked pages, ingest/query/lint). Agents maintain it at every closeout so future agents load less and assume less.
+
+## In production
+
+The kit wasn't designed on a whiteboard; it was extracted from the workflow used on [Register](https://github.com/reserve-protocol/register), Reserve's main application — a five-year-old, ~200k-LOC TypeScript codebase where the code moves real money across multiple chains and protocol versions. Register is also the first brownfield adoption (via `skills/adopt.md`), which is where most of the honest lessons in the backlog came from.
+
+This is one engineer's workflow, working and evolving — not a solved methodology and not a framework asking for stars. If a rule in here seems arbitrary, it's probably a scar.
 
 ## Install
 
