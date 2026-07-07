@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "description": "Portable, agent-agnostic AI-collaboration kit: workflow loop, wiki memory, review discipline, code standards.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lcamargof/llm-workflow.git"
+  },
   "scripts": {
     "test": "node --test 'tests/*.test.mjs'"
   }
