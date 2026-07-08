@@ -1,4 +1,4 @@
-# llm-workflow
+# agent-workflow
 
 A portable, agent-agnostic AI-collaboration kit: the workflow loop, wiki-based project memory, risk-routed review, and code standards — extracted from a real production codebase and dieted down to what agents actually follow under pressure.
 
